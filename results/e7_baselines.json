@@ -1,0 +1,26 @@
+{
+  "html": {
+    "autocurate_gate": 0.8867,
+    "baselines": {
+      "gzip": 0.1942,
+      "gopher": 0.0195
+    },
+    "best_baseline": 0.1942
+  },
+  "ocr": {
+    "autocurate_gate": 0.816,
+    "baselines": {
+      "gzip": 0.0768,
+      "ocr_dict": 0.7396
+    },
+    "best_baseline": 0.7396
+  },
+  "json": {
+    "autocurate_gate": 1.0,
+    "baselines": {
+      "gzip": 0.0698,
+      "parse_only": 0.8154
+    },
+    "best_baseline": 0.8154
+  }
+}

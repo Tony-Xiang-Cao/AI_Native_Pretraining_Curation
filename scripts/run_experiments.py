@@ -27,6 +27,8 @@ def main() -> None:
         "e3_hillclimb": experiments.e3_hillclimb,
         "e4_drift": experiments.e4_drift,
         "e5_outliers": experiments.e5_outliers,
+        "e6_drift_recovery": experiments.e6_drift_recovery,
+        "e7_baselines": experiments.e7_baselines,
     }
     summary = {}
     for name, fn in fns.items():

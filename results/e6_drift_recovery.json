@@ -1,0 +1,19 @@
+{
+  "drift_defect": "html_tag_inject (raw markup leaking into extracted text)",
+  "blind_channel": "markup_leak",
+  "before": {
+    "f1": 0.0705,
+    "markup_weight": 0.0,
+    "guard_fpr": 0.025
+  },
+  "verified": {
+    "f1": 0.9833,
+    "markup_weight": 1.016,
+    "guard_fpr": 0.0,
+    "recovered_gain": 0.9129
+  },
+  "naive_recall": {
+    "f1": 0.8889,
+    "guard_fpr": 0.25
+  }
+}

@@ -36,6 +36,14 @@ def test_e5_reproduces():
     assert experiments.e5_outliers() == _committed("e5_outliers")
 
 
+def test_e6_reproduces():
+    assert experiments.e6_drift_recovery() == _committed("e6_drift_recovery")
+
+
+def test_e7_reproduces():
+    assert experiments.e7_baselines() == _committed("e7_baselines")
+
+
 def test_e2_reproduces_if_judge_available():
     committed = _committed("e2_cascade")
     if "skipped" in committed:
@@ -53,3 +61,11 @@ def test_headline_numbers_are_sane():
     assert e3["reward_hack_fpr_gap"] > 0.1            # naive over-flags, verified does not
     e5 = _committed("e5_outliers")
     assert e5["robust_z_mad"]["f1"] >= e5["mean_k_sigma"]["f1"]
+    # E6: the verified loop recovers the blind gate; the naive control over-flags
+    e6 = _committed("e6_drift_recovery")
+    assert e6["verified"]["f1"] - e6["before"]["f1"] > 0.5      # large recovery
+    assert e6["verified"]["guard_fpr"] < e6["naive_recall"]["guard_fpr"]
+    # E7: the gate beats the best external baseline on every modality
+    e7 = _committed("e7_baselines")
+    for mod in ("html", "ocr", "json"):
+        assert e7[mod]["autocurate_gate"] >= e7[mod]["best_baseline"]

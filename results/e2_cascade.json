@@ -1,5 +1,6 @@
 {
   "n": 300,
+  "judge_backend": "heuristic",
   "heuristic_only_f1": 0.4331,
   "judge_only_f1": 0.6526,
   "operating_point": {

@@ -46,12 +46,12 @@ class HillclimbResult:
         return self.trajectory[-1] if self.trajectory else {}
 
 
-def _mean_f1(gate, docs, modality, seeds, which) -> float:
-    return mean(evaluate_gate(gate, docs, modality, s, which).f1 for s in seeds)
+def _mean_f1(gate, docs, modality, seeds, which, ops=None) -> float:
+    return mean(evaluate_gate(gate, docs, modality, s, which, ops).f1 for s in seeds)
 
 
-def _mean_recall(gate, docs, modality, seeds, which) -> float:
-    return mean(evaluate_gate(gate, docs, modality, s, which).recall for s in seeds)
+def _mean_recall(gate, docs, modality, seeds, which, ops=None) -> float:
+    return mean(evaluate_gate(gate, docs, modality, s, which, ops).recall for s in seeds)
 
 
 def hillclimb(gate0, climb_docs: Sequence[Document], modality: str,
@@ -60,7 +60,9 @@ def hillclimb(gate0, climb_docs: Sequence[Document], modality: str,
               guard_docs: Optional[Sequence[Document]] = None,
               opt_seeds: Sequence[int] = (0, 1, 2, 3, 4),
               test_seeds: Sequence[int] = (20, 21, 22, 23, 24),
-              proposer=None) -> HillclimbResult:
+              ops=None, proposer=None) -> HillclimbResult:
+    """``ops`` restricts the corruption set the climber targets — e.g. a single
+    defect type that has begun to drift (used by the drift-recovery experiment)."""
     cfg = config or HillclimbConfig()
     eval_docs = eval_docs if eval_docs is not None else climb_docs
     guard_docs = guard_docs if guard_docs is not None else eval_docs
@@ -70,8 +72,8 @@ def hillclimb(gate0, climb_docs: Sequence[Document], modality: str,
     def snapshot(it: int) -> Dict[str, float]:
         return {
             "iter": it,
-            "recall_train": _mean_recall(incumbent, climb_docs, modality, opt_seeds, "train"),
-            "f1_heldout": _mean_f1(incumbent, eval_docs, modality, test_seeds, "heldout"),
+            "recall_train": _mean_recall(incumbent, climb_docs, modality, opt_seeds, "train", ops),
+            "f1_heldout": _mean_f1(incumbent, eval_docs, modality, test_seeds, "heldout", ops),
             "guard_fpr": guard_fpr(incumbent, guard_docs),
         }
 
@@ -80,22 +82,22 @@ def hillclimb(gate0, climb_docs: Sequence[Document], modality: str,
     for it in range(1, cfg.iterations + 1):
         candidates = proposer.propose_many(incumbent, cfg.population)
         if regime == "naive_recall":
-            obj = lambda c: _mean_recall(c, climb_docs, modality, opt_seeds, "train")  # noqa: E731
+            obj = lambda c: _mean_recall(c, climb_docs, modality, opt_seeds, "train", ops)  # noqa: E731
             best = max(candidates, key=obj)
             if obj(best) > obj(incumbent):
                 incumbent = best
         elif regime == "naive_f1":
-            obj = lambda c: _mean_f1(c, climb_docs, modality, opt_seeds, "train")  # noqa: E731
+            obj = lambda c: _mean_f1(c, climb_docs, modality, opt_seeds, "train", ops)  # noqa: E731
             best = max(candidates, key=obj)
             if obj(best) > obj(incumbent):
                 incumbent = best
         else:  # verified
-            scored = [(c, verified_objective(c, climb_docs, modality, opt_seeds, "heldout"))
-                      for c in candidates]
+            scored = [(c, verified_objective(c, climb_docs, modality, opt_seeds, "heldout",
+                                             ops=ops)) for c in candidates]
             best, _ = max(scored, key=lambda t: t[1])
             decision = accept_candidate(
                 best, incumbent, eval_docs, modality, guard_docs,
-                seeds=opt_seeds, delta=0.005, eps=cfg.guard_tolerance,
+                seeds=opt_seeds, delta=0.005, eps=cfg.guard_tolerance, ops=ops,
             )
             if decision.accept:
                 incumbent = best

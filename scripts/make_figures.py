@@ -98,6 +98,22 @@ def main():
          "mean ± kσ": [e5["mean_k_sigma"][m] for m in metr]},
         "E5 — outlier detection: robust-z vs mean ± kσ"))
 
+    e6 = _load("e6_drift_recovery")
+    _save("e6_recovery.svg", bar_chart(
+        ["blind (before)", "verified", "naive_recall"],
+        {"held-out F1 on drift": [e6["before"]["f1"], e6["verified"]["f1"], e6["naive_recall"]["f1"]],
+         "clean-guard FPR": [e6["before"]["guard_fpr"], e6["verified"]["guard_fpr"],
+                             e6["naive_recall"]["guard_fpr"]]},
+        "E6 — drift-triggered self-improvement (tag-leak recovery)"))
+
+    e7 = _load("e7_baselines")
+    mods = ["html", "ocr", "json"]
+    _save("e7_baselines.svg", bar_chart(
+        mods,
+        {"autocurate gate": [e7[m]["autocurate_gate"] for m in mods],
+         "best external baseline": [e7[m]["best_baseline"] for m in mods]},
+        "E7 — gates vs external reference-free baselines (held-out F1)"))
+
     print("wrote figures to", FIG)
 
 

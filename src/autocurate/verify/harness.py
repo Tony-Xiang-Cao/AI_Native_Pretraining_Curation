@@ -63,21 +63,21 @@ def _score_labeled(gate, labeled: Sequence[Tuple[Document, int]]) -> GateScore:
 
 
 def evaluate_gate(gate, clean_docs: Sequence[Document], modality: str,
-                  seed: int = 7, which: str = "heldout") -> GateScore:
+                  seed: int = 7, which: str = "heldout", ops=None) -> GateScore:
     rng = random.Random(seed)
-    labeled = build_mutation_set(clean_docs, modality, rng, which)
+    labeled = build_mutation_set(clean_docs, modality, rng, which, ops)
     return _score_labeled(gate, labeled)
 
 
-def _f1_over_seeds(gate, clean_docs, modality, seeds, which) -> List[float]:
-    return [evaluate_gate(gate, clean_docs, modality, s, which).f1 for s in seeds]
+def _f1_over_seeds(gate, clean_docs, modality, seeds, which, ops=None) -> List[float]:
+    return [evaluate_gate(gate, clean_docs, modality, s, which, ops).f1 for s in seeds]
 
 
 def floor_and_upper(gate, clean_docs: Sequence[Document], modality: str,
-                    seeds: Sequence[int] = range(5)) -> Tuple[float, float]:
+                    seeds: Sequence[int] = range(5), ops=None) -> Tuple[float, float]:
     """(held-out-floor F1, train-upper-bound F1), each averaged over seeds."""
-    floor = mean(_f1_over_seeds(gate, clean_docs, modality, seeds, "heldout"))
-    upper = mean(_f1_over_seeds(gate, clean_docs, modality, seeds, "train"))
+    floor = mean(_f1_over_seeds(gate, clean_docs, modality, seeds, "heldout", ops))
+    upper = mean(_f1_over_seeds(gate, clean_docs, modality, seeds, "train", ops))
     return floor, upper
 
 
@@ -91,9 +91,9 @@ def guard_fpr(gate, clean_docs: Sequence[Document]) -> float:
 
 def verified_objective(gate, clean_docs: Sequence[Document], modality: str,
                        seeds: Sequence[int] = range(3), which: str = "heldout",
-                       fpr_penalty: float = 0.5) -> float:
+                       fpr_penalty: float = 0.5, ops=None) -> float:
     """Scalar hill-climb objective: held-out F1 minus a clean-guard FPR penalty."""
-    f1 = mean(_f1_over_seeds(gate, clean_docs, modality, seeds, which))
+    f1 = mean(_f1_over_seeds(gate, clean_docs, modality, seeds, which, ops))
     return f1 - fpr_penalty * guard_fpr(gate, clean_docs)
 
 
@@ -108,7 +108,7 @@ class AcceptDecision:
 
 def accept_candidate(candidate, incumbent, eval_docs: Sequence[Document], modality: str,
                      guard_docs: Sequence[Document], seeds: Sequence[int] = range(5),
-                     delta: float = 0.005, eps: float = 0.005) -> AcceptDecision:
+                     delta: float = 0.005, eps: float = 0.005, ops=None) -> AcceptDecision:
     """Verifier-gated acceptance: held-out improvement + clean-guard no-regression.
 
     The held-out F1 improvement is evaluated on ``eval_docs`` (ideally disjoint
@@ -116,8 +116,8 @@ def accept_candidate(candidate, incumbent, eval_docs: Sequence[Document], modali
     a small-sample Student-t multiplier ``t_{.975, n-1}`` over the per-seed
     improvements. The guard FPR is measured on ``guard_docs``.
     """
-    cand = _f1_over_seeds(candidate, eval_docs, modality, seeds, "heldout")
-    inc = _f1_over_seeds(incumbent, eval_docs, modality, seeds, "heldout")
+    cand = _f1_over_seeds(candidate, eval_docs, modality, seeds, "heldout", ops)
+    inc = _f1_over_seeds(incumbent, eval_docs, modality, seeds, "heldout", ops)
     diffs = [c - i for c, i in zip(cand, inc)]
     m = mean(diffs)
     n = len(diffs)

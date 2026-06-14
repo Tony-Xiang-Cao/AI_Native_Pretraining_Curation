@@ -32,11 +32,15 @@ middle to `judgecurate`'s offline judge recovers ~69% of the judge's macro-F1
 gain at half the judge calls (E2); an **un-guarded recall objective
 reward-hacks — destroying 52% of held-out clean data** — and the explicit guard
 clause delivers a hard *zero* false-positive guarantee that an un-guarded
-balanced objective cannot promise (E3); and a statistical-process-control
-monitor detects an injected parser regression with **zero-day latency across 8
-streams** (0.13 false alarms/stream) (E4). Every number is reproduced by
-committed tests, and every equation is bound to a function — an honest, auditable
-floor that a real LLM judge and a real extractor can only raise.
+balanced objective cannot promise (E3); a statistical-process-control monitor
+detects an injected parser regression with **zero-day latency across 8 streams**
+(0.13 false alarms/stream) (E4); and, when that regression starts leaking raw
+HTML tags, a verified hill-climb **adapts a blind gate's detection F1 from 0.07
+to 0.98** while a naive control over-flags (E6). The gates also beat every
+external reference-free baseline — Gopher, Alex & Burns, gzip, parse-only — on
+the same oracle (E7). Every number is reproduced by committed tests, and every
+equation is bound to a function — an honest, auditable floor that a real LLM
+judge and a real extractor can only raise.
 
 **Keywords:** pretraining-data curation; data governance; reference-free quality
 estimation; verifiable rewards; self-improvement; reward hacking; AI-native.
@@ -316,12 +320,15 @@ cases). The climber optimizes on one document set and is evaluated/guarded on a
 
 A document is flagged when `quality < threshold`, so an un-guarded recall
 objective drives the optimizer to **raise** the threshold until it over-flags.
-The contrast (E3) is the paper's clearest result, and it is more nuanced than
-"verification always wins": un-guarded *recall* reward-hacks catastrophically;
-un-guarded *balanced F1* is empirically much safer (it self-penalizes false
-positives in-sample) but carries no guarantee; only the explicit guard delivers a
-provable zero-regression on held-out clean data, at a modest cost in recovered
-F1.
+The contrast (E3) is more nuanced than "verification always wins": un-guarded
+*recall* reward-hacks catastrophically; un-guarded *balanced F1* is empirically
+much safer (it self-penalizes false positives in-sample) but carries no
+guarantee; only the explicit guard delivers a provable zero-regression on
+held-out clean data, at a modest cost in recovered F1. And when the trigger is
+*real drift* rather than a hand-degraded start (E6, §9.6), the same verified loop
+**acquires a detection capability the gate lacked** — restoring F1 from 0.07 to
+0.98 on a newly-appearing defect — which is the self-improvement claim in its
+strongest, least-constructed form.
 
 ---
 
@@ -522,16 +529,73 @@ cutoffs (3.5–4.5) it flags the same anomalies with fewer false positives; at t
 loosest cutoff (3.0) the two are within noise (0.873 vs. 0.881). The advantage is
 real but cutoff-dependent, not universal.
 
-### 9.6 Reproducing
+### 9.6 E6 — drift-triggered self-improvement (adapting to a new defect)
+
+E3 starts from a hand-degraded gate, so a reviewer may fairly call it
+un-breaking. E6 is the stronger claim: the loop **acquires a capability it
+lacked, in response to drift.** A parser regression begins leaking raw HTML tags
+into the extracted text — a defect type the deployed gate under-weights (it was
+tuned in a clean-extraction era, so its `markup_leak` channel is off). The drift
+monitor (E4) fires; the loop hill-climbs the gate **targeting the drifting defect
+type** (operator-restricted mutations), on one corpus draw, evaluated on a
+disjoint one.
+
+**Table 6.** Held-out F1 at detecting the newly-drifting tag-leak defect.
+
+| Gate state | Held-out F1 on the drift | `markup_leak` weight | Clean-guard FPR |
+|---|---|---|---|
+| Blind (before) | 0.070 | 0.00 | 0.025 |
+| **Verified hill-climb** | **0.983** | 1.02 | **0.000** |
+| Naive-recall (control) | 0.889 | — | 0.250 |
+
+![E6](figures/e6_recovery.svg)
+
+The blind gate misses the new defect almost entirely (F1 0.070). The verified
+loop **restores detection to 0.983** by re-discovering the `markup_leak` channel
+(weight 0 → 1.02), with the clean-guard FPR pinned at zero. The naive-recall
+control "recovers" only to 0.889 *and* over-flags (FPR 0.25) — so even in the
+recovery setting, the un-guarded objective reward-hacks, and the guard is what
+makes self-improvement safe to run unattended in the loop.
+
+### 9.7 E7 — gates vs. external reference-free baselines
+
+So the gates are not only compared to themselves, we score transparent stand-ins
+for the prior-art reference-free families on the **same** held-out mutation
+oracle (`baselines.py`): a compression-ratio screen (gzip), the Gopher/C4
+stop-word+symbol heuristics (HTML), the Alex & Burns dictionary/garbage ratio
+(OCR), and a `json.loads`-only check (JSON).
+
+**Table 7.** Held-out defect-detection F1 (5 seeds): AutoCurate gate vs. the best
+external reference-free baseline per modality.
+
+| Modality | AutoCurate gate | Best baseline | Other baselines |
+|---|---|---|---|
+| HTML | **0.887** | 0.194 (gzip) | Gopher 0.020 |
+| OCR | **0.816** | 0.740 (dict/garbage) | gzip 0.077 |
+| JSON | **1.000** | 0.815 (parse-only) | gzip 0.070 |
+
+![E7](figures/e7_baselines.svg)
+
+The gates beat every baseline on every modality, and the *why* is mechanistic.
+Gopher/C4 heuristics target content repetition and symbols, not extraction
+faithfulness, so they barely register markup leakage (0.020) — exactly the gap
+extraction gates fill. The Alex & Burns dictionary ratio is the strongest
+baseline (OCR 0.740) but the multi-signal gate still edges it (0.816). And
+`json.loads`-only (0.815) misses every schema-valid-but-wrong record — a deleted
+or retyped field that still parses — which the schema-aware gate catches,
+lifting it to 1.000. Compression alone (gzip) is a weak extraction-defect
+detector across the board.
+
+### 9.8 Reproducing
 
 ```bash
 pip install -e ".[judge,dev]"          # the [judge] extra (judgecurate) is needed for E2
-python scripts/run_experiments.py      # writes results/*.json (E1-E5, ~40s)
-python scripts/make_figures.py         # renders the SVG figures
-pytest                                 # 29 tests, ~55s; asserts the committed numbers
+python scripts/run_experiments.py      # writes results/*.json (E1-E7, ~45s)
+python scripts/make_figures.py         # renders the 8 SVG figures
+pytest                                 # 31 tests, ~90s; asserts the committed numbers
 ```
 
-E1/E3/E4/E5 are pure-stdlib and always reproduce; **E2 requires the `[judge]`
+E1, E3-E7 are pure-stdlib and always reproduce; **E2 requires the `[judge]`
 extra** — without `judgecurate` installed, `e2_cascade` returns a `skipped`
 marker and its reproduction test skips, so the committed E2 numbers are pinned to
 `judgecurate ≥ 0.3.0`.
@@ -553,12 +617,14 @@ filtering quality, and we are deliberate about what each does and does not show:
   reading) would change with a real backend; the cheap router is also minimal by
   design, so the curve is a lower bound on a stronger router (e.g. a distilled
   judge).
-- **E3 is a constructed worst case.** Self-improvement starts from a *hand-degraded*
-  gate and searches a 5-scalar weight space, so it demonstrates *recovery under a
-  verified accept rule*, not open-ended capability discovery; the catastrophic
-  reward-hack is specific to an un-guarded recall objective with a clean/defect
-  gray zone (an un-guarded F1 objective is empirically safe here). The guarantee
-  the guard provides is the durable claim.
+- **Self-improvement is a small parameter hill-climb, not program discovery.** It
+  searches a 5-scalar gate-weight space; we adopt the verifier-gated *accept rule*
+  of FunSearch/AlphaEvolve, not their open-ended discovery. E3 starts from a
+  *hand-degraded* gate (a constructed worst case, and its catastrophic reward-hack
+  is specific to an un-guarded recall objective with a clean/defect gray zone); E6
+  is the less-constructed version — adapting to a genuinely new defect type under
+  drift — but is still a weight hill-climb. The durable claim is the guard's
+  guarantee, not the search's power.
 - **Variance is over corruption seeds, not many corpora.** E1's intervals resample
   corruptions of a fixed document set (the gate is not fit to documents, so this
   is appropriate); E3 uses two disjoint corpus draws; broader corpus-level

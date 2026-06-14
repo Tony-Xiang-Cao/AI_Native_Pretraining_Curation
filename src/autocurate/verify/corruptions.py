@@ -204,20 +204,26 @@ def _with_raw(doc: Document, raw: str) -> Document:
 
 
 def corrupt(doc: Document, modality: str, rng: random.Random,
-            which: str = "heldout") -> Tuple[Document, DefectRecord]:
-    """Apply one randomly chosen operator for ``modality`` to a clean doc."""
-    op = rng.choice(CORRUPTORS[modality])
+            which: str = "heldout", ops: Sequence[Callable] = None
+            ) -> Tuple[Document, DefectRecord]:
+    """Apply one randomly chosen operator for ``modality`` to a clean doc.
+
+    ``ops`` restricts the operator pool — e.g. to model a drift dominated by a
+    single newly-appearing defect type (used by the drift-recovery experiment).
+    """
+    pool = list(ops) if ops else CORRUPTORS[modality]
+    op = rng.choice(pool)
     corrupted = op(doc, rng, which)
     return corrupted, DefectRecord(doc.id, modality, op.__name__, which)
 
 
 def build_mutation_set(clean_docs: Sequence[Document], modality: str,
-                       rng: random.Random, which: str = "heldout"
-                       ) -> List[Tuple[Document, int]]:
+                       rng: random.Random, which: str = "heldout",
+                       ops: Sequence[Callable] = None) -> List[Tuple[Document, int]]:
     """Balanced labelled set: each clean doc yields a clean (0) and corrupt (1) copy."""
     out: List[Tuple[Document, int]] = []
     for d in clean_docs:
         out.append((d, 0))
-        corrupted, _ = corrupt(d, modality, rng, which)
+        corrupted, _ = corrupt(d, modality, rng, which, ops)
         out.append((corrupted, 1))
     return out

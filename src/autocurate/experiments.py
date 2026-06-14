@@ -17,6 +17,7 @@ import re
 from typing import Dict
 
 from .agentloop import CrawlMonitorRoutine, LocalCronHarness, ProvenanceLedger, StreamMonitor
+from .baselines import fitted_baselines
 from .datagen import clean_corpus, load_jsonl, make_clean_text
 from .extract import HTMLGate, JSONGate, OCRGate
 from .hillclimb import hillclimb
@@ -26,7 +27,7 @@ from .profile import CohortOutlierDetector, text_features
 from .profile.heuristics import FEATURE_NAMES
 from .schema import Document, FILTER, HillclimbConfig, ProfileConfig, RETAIN
 from .utils import mean, std
-from .verify import floor_and_upper, guard_fpr
+from .verify import evaluate_gate, floor_and_upper, guard_fpr
 from .verify.corruptions import corrupt
 
 _DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data")
@@ -68,7 +69,12 @@ def e1_gate_oracle(n_per_modality: int = 80, seed: int = 7, seeds=range(5)) -> D
 # --------------------------------------------------------------------------- #
 
 def e2_cascade(fractions=(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.85, 1.0),
-               operating_point: float = 0.5) -> Dict:
+               operating_point: float = 0.5, judge_backend: str = "heuristic",
+               limit: int = None, **judge_kwargs) -> Dict:
+    """``judge_backend`` defaults to ``judgecurate``'s deterministic offline judge
+    (so the committed numbers reproduce); pass ``"anthropic"`` / ``"openai"`` /
+    ``"vllm"`` / ``"ollama"`` (with a key + the ``[llm]`` extra) for a real LLM run,
+    optionally ``limit``-ing the document count to control API cost."""
     try:
         from .judge import JudgeAdapter, _HAVE_JC, heuristic_governance_score
     except Exception:
@@ -78,13 +84,15 @@ def e2_cascade(fractions=(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.85, 1.0),
 
     path = os.path.join(_DATA_DIR, "judge_mini_corpus.jsonl")
     rows = [r for r in load_jsonl(path) if r.get("split") == "test"]
+    if limit:
+        rows = rows[:limit]
     docs = [Document(id=str(i), text=r["text"], source=r.get("source", "web"), modality="text")
             for i, r in enumerate(rows)]
     gold = [r["gold_label"] for r in rows]
     n = len(docs)
 
     hs = [heuristic_governance_score(d.text) for d in docs]
-    ja = JudgeAdapter("heuristic", n_rounds=3)
+    ja = JudgeAdapter(judge_backend, n_rounds=3, **judge_kwargs)
     jlab = [ja.adjudicate(d).label for d in docs]          # judge each once (cache)
     order = sorted(range(n), key=lambda i: hs[i])
     rank = {idx: r for r, idx in enumerate(order)}
@@ -110,6 +118,7 @@ def e2_cascade(fractions=(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.85, 1.0),
     recovered = ((op["macro_f1"] - base_f1) / (judge_f1 - base_f1)) if judge_f1 != base_f1 else 0.0
     return {
         "n": n,
+        "judge_backend": judge_backend,
         "heuristic_only_f1": round(base_f1, 4),
         "judge_only_f1": round(judge_f1, 4),
         "operating_point": {"escalate_frac": op["escalate_frac"],
@@ -305,6 +314,68 @@ def e5_outliers(n: int = 400, anomaly_frac: float = 0.12,
     }
 
 
+# --------------------------------------------------------------------------- #
+# E6 — drift-triggered self-improvement (the loop adapts to a new defect type)
+# --------------------------------------------------------------------------- #
+
+def e6_drift_recovery(n: int = 80, iterations: int = 25, population: int = 12) -> Dict:
+    """A parser regression starts leaking raw HTML tags — a defect the deployed
+    gate under-weights (it was tuned in a clean-extraction era). The drift monitor
+    fires; the loop hill-climbs the gate, *targeting the drifting defect type*, and
+    recovers detection. The naive control shows the guard matters even here.
+    """
+    from .verify.corruptions import html_tag_inject
+    climb = [d for d in clean_corpus(n * 4, seed=7) if d.modality == "html"][:n]
+    held = [d for d in clean_corpus(n * 4, seed=8) if d.modality == "html"][:n]
+    drift_ops = [html_tag_inject]                 # the newly-appearing defect
+
+    blind = HTMLGate()
+    blind.weights["markup_leak"] = 0.0            # blind to tag leakage
+    before_f1, _ = floor_and_upper(blind, held, "html", seeds=range(5), ops=drift_ops)
+    before_fpr = guard_fpr(blind, held)
+
+    cfg = HillclimbConfig(iterations=iterations, population=population, step=0.15, seed=3)
+    ver = hillclimb(blind.clone(), climb, "html", regime="verified", config=cfg,
+                    eval_docs=held, guard_docs=held, ops=drift_ops)
+    nai = hillclimb(blind.clone(), climb, "html", regime="naive_recall", config=cfg,
+                    eval_docs=held, guard_docs=held, ops=drift_ops)
+    ver_f1, _ = floor_and_upper(ver.gate, held, "html", seeds=range(5), ops=drift_ops)
+    nai_f1, _ = floor_and_upper(nai.gate, held, "html", seeds=range(5), ops=drift_ops)
+
+    return {
+        "drift_defect": "html_tag_inject (raw markup leaking into extracted text)",
+        "blind_channel": "markup_leak",
+        "before": {"f1": round(before_f1, 4), "markup_weight": round(blind.weights["markup_leak"], 3),
+                   "guard_fpr": round(before_fpr, 4)},
+        "verified": {"f1": round(ver_f1, 4), "markup_weight": round(ver.gate.weights["markup_leak"], 3),
+                     "guard_fpr": round(guard_fpr(ver.gate, held), 4),
+                     "recovered_gain": round(ver_f1 - before_f1, 4)},
+        "naive_recall": {"f1": round(nai_f1, 4),
+                         "guard_fpr": round(guard_fpr(nai.gate, held), 4)},
+    }
+
+
+# --------------------------------------------------------------------------- #
+# E7 — our gates vs external reference-free baselines on the same oracle
+# --------------------------------------------------------------------------- #
+
+def e7_baselines(n_per_modality: int = 80, seed: int = 7, seeds=range(5)) -> Dict:
+    docs = clean_corpus(n_per_modality * 4, seed=seed)
+    out = {}
+    for name, gate, mod in (("html", HTMLGate(), "html"),
+                            ("ocr", OCRGate(), "ocr"),
+                            ("json", JSONGate(), "json")):
+        dd = [d for d in docs if d.modality == mod][:n_per_modality]
+        if name == "json":
+            gate.fit_schema([d.raw for d in dd])
+        ours = mean(evaluate_gate(gate, dd, mod, s, "heldout").f1 for s in seeds)
+        base = {bn: round(mean(evaluate_gate(bg, dd, mod, s, "heldout").f1 for s in seeds), 4)
+                for bn, bg in fitted_baselines(mod, dd).items()}
+        out[mod] = {"autocurate_gate": round(ours, 4), "baselines": base,
+                    "best_baseline": round(max(base.values()), 4) if base else 0.0}
+    return out
+
+
 def run_all() -> Dict:
     return {
         "e1_gate_oracle": e1_gate_oracle(),
@@ -312,4 +383,6 @@ def run_all() -> Dict:
         "e3_hillclimb": e3_hillclimb(),
         "e4_drift": e4_drift(),
         "e5_outliers": e5_outliers(),
+        "e6_drift_recovery": e6_drift_recovery(),
+        "e7_baselines": e7_baselines(),
     }

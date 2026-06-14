@@ -131,13 +131,22 @@ loop = CurationLoop(judge=JudgeAdapter("anthropic"), mode="cascade")   # or "ope
   on shift, ~5.5-day recovery after re-extraction.
 - **E5 — outliers:** robust-z (MAD) beats mean ± kσ at 3 of 4 cutoffs (F1 **0.932
   vs. 0.889** at z = 3.5).
+- **E6 — drift-triggered self-improvement:** a parser regression starts leaking raw
+  HTML tags; a gate blind to it detects at F1 **0.07**, and the loop's verified
+  hill-climb **adapts it to 0.98** (guard FPR 0) — the naive control "recovers" to
+  only 0.89 while over-flagging (FPR 0.25).
+- **E7 — vs. external baselines:** the gates beat every reference-free prior-art
+  baseline on the same oracle (HTML **0.887** vs. gzip 0.19 / Gopher 0.02; OCR
+  **0.816** vs. Alex&Burns dict 0.74; JSON **1.0** vs. parse-only 0.82).
 
 <p align="center"><img src="paper/figures/e3_hillclimb.svg" alt="Verified vs naive hill-climbing" width="640"></p>
 
 ```bash
-python scripts/run_experiments.py     # writes results/*.json (E1-E5, ~35s)
-python scripts/make_figures.py        # renders the SVG figures
-pytest                                # 29 tests, ~50s; asserts the committed numbers
+python scripts/run_experiments.py     # writes results/*.json (E1-E7, ~45s)
+python scripts/make_figures.py        # renders the 8 SVG figures
+pytest                                # 31 tests, ~90s; asserts the committed numbers
+# optional: rerun E2 against a REAL LLM judge (needs an API key + the [llm] extra)
+python scripts/run_llm_e2.py --judge anthropic --limit 150
 ```
 
 See [`paper/paper.md`](paper/paper.md) for the full write-up and references, and
@@ -156,12 +165,14 @@ src/autocurate/
   agentloop/          harness-agnostic Routine + AgentHarness + ledger + EWMA/CUSUM SPC
   report.py           quality report (markdown + json), by governance direction
   pipeline.py         the cheap->expensive cascade
+  baselines.py        external reference-free baselines (gzip / Gopher / Alex&Burns / parse-only)
   datagen.py          deterministic synthetic corpora
-  metrics.py · svgplot.py · cli.py · experiments.py
-scripts/              run_experiments, make_figures
-tests/                29 tests, no network; assert the committed results
+  metrics.py · svgplot.py · cli.py · experiments.py (E1-E7)
+scripts/              run_experiments, make_figures, run_llm_e2 (optional real LLM)
+examples/             quickstart, full_loop, spot_check (real-corpus face validity)
+tests/                31 tests, no network; assert the committed results
 paper/                paper.md + figures (SVG)
-results/              committed deterministic E1-E5 numbers
+results/              committed deterministic E1-E7 numbers
 ```
 
 ## Limitations
