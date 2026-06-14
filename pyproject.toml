@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autocurate"
+version = "0.1.0"
+description = "AI-native, self-verifying, self-improving pretraining data curation operating loop"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Xiang \"Tony\" Cao", email = "caoxiang828@gmail.com" }]
+keywords = [
+  "pretraining-data", "data-curation", "data-governance", "ai-native",
+  "self-improvement", "verifiable-rewards", "ocr-quality", "html-extraction",
+  "data-quality", "llm-as-judge", "agentic",
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+# The core engine is PURE STANDARD LIBRARY — no third-party dependencies.
+dependencies = []
+
+[project.optional-dependencies]
+# Semantic adjudication via the sibling LLM-as-Judge package.
+judge = ["judgecurate>=0.3.0"]
+# Real LLM judge/proposer backends (closed + open-weight).
+llm = ["anthropic>=0.39", "openai>=1.0"]
+# Figures and the upload-ready dataset.
+viz = ["matplotlib>=3.5"]
+# Development.
+dev = ["pytest>=7.0", "ruff>=0.1"]
+
+[project.urls]
+Homepage = "https://github.com/Tony-Xiang-Cao/AI_Native_Pretraining_Curation"
+
+[project.scripts]
+autocurate = "autocurate.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+autocurate = ["py.typed"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

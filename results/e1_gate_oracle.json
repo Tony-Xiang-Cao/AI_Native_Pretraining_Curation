@@ -1,0 +1,29 @@
+{
+  "html": {
+    "floor_f1": 0.8867,
+    "upper_f1": 0.9724,
+    "guard_fpr": 0.025,
+    "memorization_gap": 0.0856
+  },
+  "ocr": {
+    "floor_f1": 0.816,
+    "upper_f1": 0.9821,
+    "guard_fpr": 0.0,
+    "memorization_gap": 0.1661
+  },
+  "json": {
+    "floor_f1": 1.0,
+    "upper_f1": 1.0,
+    "guard_fpr": 0.0,
+    "memorization_gap": 0.0
+  },
+  "macro": {
+    "floor_f1": 0.9009,
+    "upper_f1": 0.9848
+  },
+  "hard_macro": {
+    "floor_f1": 0.8514,
+    "upper_f1": 0.9772,
+    "note": "HTML+OCR only; JSON excluded as a parse oracle"
+  }
+}

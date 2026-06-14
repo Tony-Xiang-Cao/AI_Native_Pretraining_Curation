@@ -1,0 +1,73 @@
+{
+  "n": 300,
+  "heuristic_only_f1": 0.4331,
+  "judge_only_f1": 0.6526,
+  "operating_point": {
+    "escalate_frac": 0.5,
+    "judge_call_rate": 0.5,
+    "macro_f1": 0.5838,
+    "recovered_gain": 0.6865
+  },
+  "curve": [
+    {
+      "escalate_frac": 0.0,
+      "judge_calls": 0,
+      "macro_f1": 0.4331,
+      "agreement": 0.5933
+    },
+    {
+      "escalate_frac": 0.1,
+      "judge_calls": 30,
+      "macro_f1": 0.4883,
+      "agreement": 0.63
+    },
+    {
+      "escalate_frac": 0.2,
+      "judge_calls": 60,
+      "macro_f1": 0.5119,
+      "agreement": 0.63
+    },
+    {
+      "escalate_frac": 0.3,
+      "judge_calls": 90,
+      "macro_f1": 0.5515,
+      "agreement": 0.65
+    },
+    {
+      "escalate_frac": 0.4,
+      "judge_calls": 120,
+      "macro_f1": 0.5576,
+      "agreement": 0.6567
+    },
+    {
+      "escalate_frac": 0.5,
+      "judge_calls": 150,
+      "macro_f1": 0.5838,
+      "agreement": 0.6733
+    },
+    {
+      "escalate_frac": 0.6,
+      "judge_calls": 180,
+      "macro_f1": 0.5978,
+      "agreement": 0.6867
+    },
+    {
+      "escalate_frac": 0.7,
+      "judge_calls": 210,
+      "macro_f1": 0.6186,
+      "agreement": 0.7067
+    },
+    {
+      "escalate_frac": 0.85,
+      "judge_calls": 255,
+      "macro_f1": 0.6649,
+      "agreement": 0.7433
+    },
+    {
+      "escalate_frac": 1.0,
+      "judge_calls": 300,
+      "macro_f1": 0.6526,
+      "agreement": 0.73
+    }
+  ]
+}

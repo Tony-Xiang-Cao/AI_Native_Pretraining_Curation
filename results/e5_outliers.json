@@ -1,0 +1,42 @@
+{
+  "n": 400,
+  "anomalies": 48,
+  "headline_z": 3.5,
+  "robust_z_mad": {
+    "precision": 0.8727,
+    "recall": 1.0,
+    "f1": 0.932
+  },
+  "mean_k_sigma": {
+    "precision": 0.8,
+    "recall": 1.0,
+    "f1": 0.8889
+  },
+  "z_sweep": [
+    {
+      "z": 3.0,
+      "robust_f1": 0.8727,
+      "nonrobust_f1": 0.8807
+    },
+    {
+      "z": 3.5,
+      "robust_f1": 0.932,
+      "nonrobust_f1": 0.8889
+    },
+    {
+      "z": 4.0,
+      "robust_f1": 0.9505,
+      "nonrobust_f1": 0.9231
+    },
+    {
+      "z": 4.5,
+      "robust_f1": 1.0,
+      "nonrobust_f1": 0.9231
+    }
+  ],
+  "robust_wins_at": [
+    3.5,
+    4.0,
+    4.5
+  ]
+}

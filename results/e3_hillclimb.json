@@ -1,0 +1,604 @@
+{
+  "protocol": "optimize on seed-7 docs; eval+guard on disjoint seed-8 docs",
+  "naive_recall": {
+    "start": {
+      "recall_train": 0.7933,
+      "f1_heldout": 0.7284,
+      "guard_fpr": 0.0
+    },
+    "end": {
+      "recall_train": 1.0,
+      "f1_heldout": 0.7898,
+      "guard_fpr": 0.5167
+    },
+    "trajectory": [
+      {
+        "iter": 0,
+        "recall_train": 0.7933,
+        "f1_heldout": 0.7284,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 1,
+        "recall_train": 0.9167,
+        "f1_heldout": 0.7919,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 2,
+        "recall_train": 0.9733,
+        "f1_heldout": 0.9119,
+        "guard_fpr": 0.0333
+      },
+      {
+        "iter": 3,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 4,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 5,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 6,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 7,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 8,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 9,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 10,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 11,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 12,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 13,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 14,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 15,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 16,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 17,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 18,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 19,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 20,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 21,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 22,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 23,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 24,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 25,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 26,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 27,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 28,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 29,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      },
+      {
+        "iter": 30,
+        "recall_train": 1.0,
+        "f1_heldout": 0.7898,
+        "guard_fpr": 0.5167
+      }
+    ]
+  },
+  "naive_f1": {
+    "start": {
+      "recall_train": 0.7933,
+      "f1_heldout": 0.7284,
+      "guard_fpr": 0.0
+    },
+    "end": {
+      "recall_train": 0.9967,
+      "f1_heldout": 0.856,
+      "guard_fpr": 0.0167
+    },
+    "trajectory": [
+      {
+        "iter": 0,
+        "recall_train": 0.7933,
+        "f1_heldout": 0.7284,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 1,
+        "recall_train": 0.9167,
+        "f1_heldout": 0.7919,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 2,
+        "recall_train": 0.96,
+        "f1_heldout": 0.818,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 3,
+        "recall_train": 0.9767,
+        "f1_heldout": 0.8034,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 4,
+        "recall_train": 0.99,
+        "f1_heldout": 0.8034,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 5,
+        "recall_train": 0.99,
+        "f1_heldout": 0.8034,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 6,
+        "recall_train": 0.9933,
+        "f1_heldout": 0.8034,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 7,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 8,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 9,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 10,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 11,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 12,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 13,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 14,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 15,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 16,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 17,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 18,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 19,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 20,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 21,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 22,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 23,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 24,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 25,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 26,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 27,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 28,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 29,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      },
+      {
+        "iter": 30,
+        "recall_train": 0.9967,
+        "f1_heldout": 0.856,
+        "guard_fpr": 0.0167
+      }
+    ]
+  },
+  "verified": {
+    "start": {
+      "recall_train": 0.7933,
+      "f1_heldout": 0.7284,
+      "guard_fpr": 0.0
+    },
+    "end": {
+      "recall_train": 0.7533,
+      "f1_heldout": 0.8114,
+      "guard_fpr": 0.0
+    },
+    "trajectory": [
+      {
+        "iter": 0,
+        "recall_train": 0.7933,
+        "f1_heldout": 0.7284,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 1,
+        "recall_train": 0.9167,
+        "f1_heldout": 0.7919,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 2,
+        "recall_train": 0.9167,
+        "f1_heldout": 0.7919,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 3,
+        "recall_train": 0.9167,
+        "f1_heldout": 0.7919,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 4,
+        "recall_train": 0.9167,
+        "f1_heldout": 0.7919,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 5,
+        "recall_train": 0.9167,
+        "f1_heldout": 0.7919,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 6,
+        "recall_train": 0.9167,
+        "f1_heldout": 0.7919,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 7,
+        "recall_train": 0.9167,
+        "f1_heldout": 0.7919,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 8,
+        "recall_train": 0.9167,
+        "f1_heldout": 0.7919,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 9,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 10,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 11,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 12,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 13,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 14,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 15,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 16,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 17,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 18,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 19,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 20,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 21,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 22,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 23,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 24,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 25,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 26,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 27,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 28,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 29,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      },
+      {
+        "iter": 30,
+        "recall_train": 0.7533,
+        "f1_heldout": 0.8114,
+        "guard_fpr": 0.0
+      }
+    ]
+  },
+  "reward_hack_fpr_gap": 0.5167
+}
