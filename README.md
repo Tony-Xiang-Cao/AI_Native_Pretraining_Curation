@@ -149,7 +149,7 @@ pytest                                # 31 tests, ~90s; asserts the committed nu
 python scripts/run_llm_e2.py --judge anthropic --limit 150
 ```
 
-See [`paper/paper.md`](paper/paper.md) for the full write-up and references, and
+See [`paper/AutoCurate_AI_Native_Pretraining_Data.md`](paper/AutoCurate_AI_Native_Pretraining_Data.md) for the full write-up and references, and
 [`docs/architecture.md`](docs/architecture.md) for the design.
 
 ## Repository layout
@@ -171,7 +171,7 @@ src/autocurate/
 scripts/              run_experiments, make_figures, run_llm_e2 (optional real LLM)
 examples/             quickstart, full_loop, spot_check (real-corpus face validity)
 tests/                31 tests, no network; assert the committed results
-paper/                paper.md + figures (SVG)
+paper/                AutoCurate_AI_Native_Pretraining_Data.{md,docx,pdf} + figures (SVG)
 results/              committed deterministic E1-E7 numbers
 ```
 
@@ -183,7 +183,7 @@ gate's dictionary-free garble detector is a deliberately weak stand-in (its
 0.166 floor↔upper gap is the honest cost), and the cheap governance score is
 minimal by design, so E2 is a lower bound on a stronger router. We train no
 language model and measure no downstream accuracy — the loop emits a curated,
-provenance-tagged corpus ready for that study. See [paper §10](paper/paper.md).
+provenance-tagged corpus ready for that study. See [paper §10](paper/AutoCurate_AI_Native_Pretraining_Data.md).
 
 ## License
 

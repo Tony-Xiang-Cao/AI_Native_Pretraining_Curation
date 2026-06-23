@@ -3,7 +3,7 @@ message: "If you use this software, please cite it as below."
 title: "autocurate: An AI-Native, Self-Verifying Operating Loop for Pretraining-Data Curation"
 authors:
   - family-names: Cao
-    given-names: "Xiang \"Tony\""
+    given-names: "Xiang Tony"
     email: caoxiang828@gmail.com
 year: 2026
 version: 0.1.0
